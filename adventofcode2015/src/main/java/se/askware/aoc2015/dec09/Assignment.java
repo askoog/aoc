@@ -1,9 +1,9 @@
-package se.askware.aoc2024.template;
+package se.askware.aoc2015.dec09;
 
 import java.io.IOException;
 import java.util.List;
 
-import se.askware.aoc2024.common.AocBase;
+import se.askware.aoc2015.common.AocBase;
 
 public class Assignment extends AocBase {
 
@@ -13,6 +13,7 @@ public class Assignment extends AocBase {
 
 	@Override
 	public void solvePartOne(List<String> input) {
+
 	}
 
 	@Override

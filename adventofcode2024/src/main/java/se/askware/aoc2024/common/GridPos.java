@@ -26,6 +26,10 @@ public class GridPos extends Pair<Integer> {
 		return new GridPos(getRow() - other.getRow(), getCol() - other.getCol());
 	}
 
+	public GridPos neighbor(Direction dir){
+		return translate(dir.getPos());
+	}
+
 	public GridPos move(Direction dir){
 		return translate(dir.getPos());
 	}
@@ -34,4 +38,9 @@ public class GridPos extends Pair<Integer> {
 		final GridPos pos = dir.getPos();
 		return translate(new GridPos(pos.getRow() * numSteps, pos.getCol() * numSteps));
 	}
+
+	public GridPos move(XYPair dir, int numSteps){
+		return translate(new GridPos(dir.getY() * numSteps, dir.getX() * numSteps));
+	}
+
 }
