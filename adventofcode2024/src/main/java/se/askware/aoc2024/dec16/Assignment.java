@@ -24,41 +24,17 @@ public class Assignment extends AocBase {
 
 	@Override
 	public void solvePartOne(List<String> input) {
-		final Grid<CharCell> grid = Grid.charGrid(input);
-		final CharCell start = grid.findFirst(c -> c.value == 'S').orElseThrow();
-		final CharCell end = grid.findFirst(c -> c.value == 'E').orElseThrow();
-
-		Map<DirectedPos, Reindeer> seen = new HashMap<>();
-		List<CharCell> path = List.of(start);
-		Queue<Reindeer> queue = new PriorityQueue<>(Comparator.comparingInt(r -> r.cost));
-		queue.add(new Reindeer(path, Direction.RIGHT, 0));
-		while (!queue.isEmpty()) {
-			Reindeer reindeer = queue.poll();
-			final Reindeer best = seen.get(new DirectedPos(reindeer.path.get(reindeer.path.size() - 1).pos(), reindeer.dir));
-			if (best != null && best.cost <= reindeer.cost) {
-				continue;
-			} else {
-				seen.put(new DirectedPos(reindeer.path.get(reindeer.path.size() - 1).pos(), reindeer.dir), reindeer);
-			}
-			CharCell current = reindeer.path.get(reindeer.path.size() - 1);
-			if (current.equals(end)) {
-				System.out.println(reindeer.cost);
-				break;
-			}
-			CharCell next = grid.getOptionalCell(current.pos().move(reindeer.dir)).orElseThrow();
-			if (next.value == '.' || next.value == 'E') {
-				List<CharCell> newPath = new ArrayList<>(reindeer.path);
-				newPath.add(next);
-				queue.add(new Reindeer(newPath, reindeer.dir, reindeer.cost + 1));
-			}
-			Arrays.stream(Direction.values()).forEach(dir ->
-					queue.add(new Reindeer(new ArrayList<>(reindeer.path), dir, reindeer.cost + 1000)));
-		}
-
+		final List<Reindeer> bestPaths = findBestPaths(input, true);
+		System.out.println(bestPaths.get(0).cost);
 	}
 
 	@Override
 	public void solvePartTwo(List<String> input) {
+		final List<Reindeer> finished = findBestPaths(input, false);
+		System.out.println(finished.stream().flatMap(r -> r.path.stream()).distinct().count());
+	}
+
+	private static List<Reindeer> findBestPaths(List<String> input, boolean findOne) {
 		final Grid<CharCell> grid = Grid.charGrid(input);
 		final CharCell start = grid.findFirst(c -> c.value == 'S').orElseThrow();
 		final CharCell end = grid.findFirst(c -> c.value == 'E').orElseThrow();
@@ -75,14 +51,22 @@ public class Assignment extends AocBase {
 				continue;
 			}
 			final Reindeer best = seen.get(new DirectedPos(reindeer.path.get(reindeer.path.size() - 1).pos(), reindeer.dir));
-			if (best != null && best.cost < reindeer.cost) {
-				continue;
+			if (best != null){
+				if (best.cost < reindeer.cost) {
+					continue;
+				}
+				if (findOne && best.cost <= reindeer.cost) {
+					continue;
+				}
 			} else {
 				seen.put(new DirectedPos(reindeer.path.get(reindeer.path.size() - 1).pos(), reindeer.dir), reindeer);
 			}
 			CharCell current = reindeer.path.get(reindeer.path.size() - 1);
 			if (current.equals(end)) {
 				finished.add(reindeer);
+				if (findOne) {
+					return finished;
+				}
 				continue;
 			}
 			CharCell next = grid.getOptionalCell(current.pos().move(reindeer.dir)).orElseThrow();
@@ -94,8 +78,7 @@ public class Assignment extends AocBase {
 			Arrays.stream(Direction.values()).forEach(dir ->
 					queue.add(new Reindeer(new ArrayList<>(reindeer.path), dir, reindeer.cost + 1000)));
 		}
-
-		System.out.println(finished.stream().flatMap(r -> r.path.stream()).distinct().count());
+		return finished;
 	}
 
 	record DirectedPos(GridPos pos, Direction dir) {

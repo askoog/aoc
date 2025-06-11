@@ -3,6 +3,7 @@ package se.askware.aoc2024.common;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -58,24 +59,24 @@ public abstract class AocBase {
 		long[] times = new long[4];
 		if (example != null && modes.contains(RunMode.EXAMPLE1)) {
 			System.out.println("** example **");
-			times[0] = time(() -> solvePartOne(example));
+			times[0] = time(() -> solveExampleOne(new ArrayList<>(example)));
 		}
 		if (modes.contains(RunMode.PART1)) {
 			System.out.println("** part one **");
-			times[1] = time(() -> solvePartOne(input));
+			times[1] = time(() -> solvePartOne(new ArrayList<>(input)));
 		}
 		if (modes.contains(RunMode.EXAMPLE2)) {
 			if (example2 != null) {
 				System.out.println("** example two **");
-				times[2] = time(() -> solvePartTwo(example2));
+				times[2] = time(() -> solveExampleTwo(new ArrayList<>(example2)));
 			} else if (example != null) {
 				System.out.println("** example two **");
-				times[2] = time(() -> solvePartTwo(example));
+				times[2] = time(() -> solveExampleTwo(new ArrayList<>(example)));
 			}
 		}
 		if (modes.contains(RunMode.PART2)) {
 			System.out.println("** part two **");
-			times[3] = time(() -> solvePartTwo(input));
+			times[3] = time(() -> solvePartTwo(new ArrayList<>(input)));
 		}
 		System.out.println();
 		System.out.println("Stats: ");
@@ -94,6 +95,14 @@ public abstract class AocBase {
 	public abstract void solvePartOne(List<String> input);
 
 	public abstract void solvePartTwo(List<String> input);
+
+	public void solveExampleOne(List<String> input) {
+		solvePartOne(input);
+	}
+
+	public void solveExampleTwo(List<String> input) {
+		solvePartTwo(input);
+	}
 
 	public <T> List<T> convertInput(List<String> input, Function<String, T> func) {
 		return input.stream().map(func).collect(Collectors.toList());

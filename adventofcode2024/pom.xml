@@ -9,6 +9,8 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<javac.src.version>21</javac.src.version>
+		<javac.target.version>21</javac.target.version>
 	</properties>
 
 	<dependencies>
