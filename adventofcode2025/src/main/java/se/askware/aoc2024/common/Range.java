@@ -2,6 +2,9 @@ package se.askware.aoc2024.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public class Range {
 
@@ -15,9 +18,13 @@ public class Range {
 
 	public static Range valueOf(String s){
 		final String[] split = s.split("-");
-		return new Range(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+		return new Range(Long.parseLong(split[0]), Long.parseLong(split[1]));
 	}
 
+    public LongStream stream() {
+        return LongStream.rangeClosed(start, end);
+    }
+    
 	public long distance(){
 		return end - start + 1;
 	}

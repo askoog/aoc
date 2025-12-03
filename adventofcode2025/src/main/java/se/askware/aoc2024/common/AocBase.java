@@ -40,11 +40,7 @@ public abstract class AocBase {
 	}
 
 	public AocBase() {
-		try {
-			input = IOUtils.readLines(getClass().getResourceAsStream("inputs.txt"), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+        input = IOUtils.readLines(getClass().getResourceAsStream("inputs.txt"), StandardCharsets.UTF_8);
 		try {
 			example = IOUtils.readLines(getClass().getResourceAsStream("example.txt"), StandardCharsets.UTF_8);
 		} catch (Exception e) {
@@ -57,33 +53,60 @@ public abstract class AocBase {
 
 	public void run() {
 		long[] times = new long[4];
+        long[] results = new long[4];
 		if (example != null && modes.contains(RunMode.EXAMPLE1)) {
 			System.out.println("** example **");
-			times[0] = time(() -> solveExampleOne(new ArrayList<>(example)));
+			times[0] = time(() -> {
+                try{
+                    results[0] = solveExampleOne(new ArrayList<>(example));
+                } catch(Exception e){
+                    results[0] = -1;
+                    e.printStackTrace();
+                }
+            });
 		}
 		if (modes.contains(RunMode.PART1)) {
 			System.out.println("** part one **");
-			times[1] = time(() -> solvePartOne(new ArrayList<>(input)));
+			times[1] = time(() -> {
+                try{
+                    results[1] = solveExampleOne(new ArrayList<>(input));
+                } catch(Exception e){
+                    results[1] = -1;
+                    e.printStackTrace();
+                }
+            });
 		}
 		if (modes.contains(RunMode.EXAMPLE2)) {
-			if (example2 != null) {
+            final List<String> e2 = example2 != null ? example2 : example;
+            if (e2 != null) {
 				System.out.println("** example two **");
-				times[2] = time(() -> solveExampleTwo(new ArrayList<>(example2)));
-			} else if (example != null) {
-				System.out.println("** example two **");
-				times[2] = time(() -> solveExampleTwo(new ArrayList<>(example)));
+				times[2] = time(() -> {
+                    try {
+                        results[2] = solveExampleTwo(new ArrayList<>(e2));
+                    } catch (Exception e) {
+                        results[2] = -1;
+                        e.printStackTrace();
+                    }
+                });
 			}
 		}
 		if (modes.contains(RunMode.PART2)) {
 			System.out.println("** part two **");
-			times[3] = time(() -> solvePartTwo(new ArrayList<>(input)));
+			times[3] = time(() -> {
+                try {
+                    results[3] = solvePartTwo(new ArrayList<>(input));
+                } catch (Exception e) {
+                    results[3] = -1;
+                    e.printStackTrace();
+                } 
+            });
 		}
-		System.out.println();
-		System.out.println("Stats: ");
-		System.out.println("Example 1: " + times[0] + "ms");
-		System.out.println("Part 1:    " + times[1] + "ms");
-		System.out.println("Example 2: " + times[2] + "ms");
-		System.out.println("Part 2:    " + times[3] + "ms");
+        System.out.println();
+        System.out.println("Results: ");
+        System.out.println("Example 1: " + results[0] + "\t(" + times[0] + "ms)");
+        System.out.println("Part 1:    " + results[1] + "\t(" + times[1] + "ms)");
+        System.out.println("Example 2: " + results[2] + "\t(" + times[2] + "ms)");
+        System.out.println("Part 2:    " + results[3] + "\t(" + times[3] + "ms)");
 	}
 
 	public long time(Runnable r) {
@@ -92,16 +115,16 @@ public abstract class AocBase {
 		return (System.nanoTime() - start) / 1000000;
 	}
 
-	public abstract void solvePartOne(List<String> input);
+	public abstract long solvePartOne(List<String> input);
 
-	public abstract void solvePartTwo(List<String> input);
+	public abstract long solvePartTwo(List<String> input);
 
-	public void solveExampleOne(List<String> input) {
-		solvePartOne(input);
+	public long solveExampleOne(List<String> input) {
+		return solvePartOne(input);
 	}
 
-	public void solveExampleTwo(List<String> input) {
-		solvePartTwo(input);
+	public long solveExampleTwo(List<String> input) {
+		return solvePartTwo(input);
 	}
 
 	public <T> List<T> convertInput(List<String> input, Function<String, T> func) {
@@ -112,10 +135,10 @@ public abstract class AocBase {
 		return input.stream().map(func).collect(Collectors.toList());
 	}
 
-	public static List<Integer> toIntList(String line) {
+	public List<Integer> toIntList(String line) {
 		return toIntList(line, " ");
 	}
-	public static List<Integer> toIntList(String line, String delimiter) {
+	public List<Integer> toIntList(String line, String delimiter) {
 		return Arrays.stream(line.split(delimiter))
 				.map(Integer::parseInt)
 				.collect(Collectors.toList());
