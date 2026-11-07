@@ -6,7 +6,12 @@ public class XYPair extends Pair<Integer>{
 		super(first, second);
 	}
 
-	public Integer getX() {
+    public static XYPair parse(String s, char delimiter) {
+        return new XYPair(Integer.parseInt(s.substring(0, s.indexOf(delimiter))), 
+                Integer.parseInt(s.substring(s.indexOf(delimiter) + 1)));
+    }
+
+    public Integer getX() {
 		return super.getFirst();
 	}
 

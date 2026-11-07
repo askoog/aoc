@@ -25,6 +25,10 @@ public class Range {
         return LongStream.rangeClosed(start, end);
     }
     
+    public boolean includes(long value) {
+        return value >= start && value <= end;
+    }
+    
 	public long distance(){
 		return end - start + 1;
 	}

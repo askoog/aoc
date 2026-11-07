@@ -59,6 +59,7 @@ public abstract class AocBase {
 			times[0] = time(() -> {
                 try{
                     results[0] = solveExampleOne(new ArrayList<>(example));
+                    System.out.println(results[0]);
                 } catch(Exception e){
                     results[0] = -1;
                     e.printStackTrace();
@@ -69,7 +70,8 @@ public abstract class AocBase {
 			System.out.println("** part one **");
 			times[1] = time(() -> {
                 try{
-                    results[1] = solveExampleOne(new ArrayList<>(input));
+                    results[1] = solvePartOne(new ArrayList<>(input));
+                    System.out.println(results[1]);
                 } catch(Exception e){
                     results[1] = -1;
                     e.printStackTrace();
@@ -83,6 +85,8 @@ public abstract class AocBase {
 				times[2] = time(() -> {
                     try {
                         results[2] = solveExampleTwo(new ArrayList<>(e2));
+                        System.out.println(results[2]);
+
                     } catch (Exception e) {
                         results[2] = -1;
                         e.printStackTrace();
@@ -95,6 +99,8 @@ public abstract class AocBase {
 			times[3] = time(() -> {
                 try {
                     results[3] = solvePartTwo(new ArrayList<>(input));
+                    System.out.println(results[3]);
+
                 } catch (Exception e) {
                     results[3] = -1;
                     e.printStackTrace();
