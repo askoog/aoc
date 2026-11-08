@@ -11,6 +11,8 @@
 		<java.version>21</java.version>
 		<javac.src.version>21</javac.src.version>
 		<javac.target.version>21</javac.target.version>
+		<maven.compiler.release>25</maven.compiler.release>
+
 	</properties>
 
 	<dependencies>
