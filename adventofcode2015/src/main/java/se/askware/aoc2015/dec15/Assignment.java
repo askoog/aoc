@@ -12,80 +12,99 @@ import se.askware.aoc2015.common.AocBase;
 
 public class Assignment extends AocBase {
 
-	public static void main(String[] args) throws IOException {
-		new Assignment().run();
-	}
+    public static void main(String[] args) throws IOException {
+        new Assignment().run();
+    }
 
-	@Override
-	public void solvePartOne(List<String> input) {
-		Pattern p = Pattern.compile("(.+): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)");
-		final List<Ingredient> list = input.stream().map(line -> {
-			final Matcher matcher = p.matcher(line);
-			matcher.find();
-			return new Ingredient(matcher.group(1), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)),
-					Integer.parseInt(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-		}).toList();
+    @Override
+    public void solvePartOne(List<String> input) {
+        Pattern p = Pattern.compile("(.+): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)");
+        final List<Ingredient> list = buildIngredients(input, p);
 
-		Queue<int[]> queue = new ArrayDeque<>();
-		final int[] e = new int[list.size()];
-		e[0] = 100;
-		queue.add(e);
+        long max = findBest(list);
+        System.out.println("max: " + max);
+    }
 
-		long max = 0;
-		while (!queue.isEmpty()) {
-			final int[] poll = queue.poll();
+    private long findBest(List<Ingredient> list) {
+        return findBest(list, Integer.MAX_VALUE);
+    }
 
-			int[] sums = new int[4];
-			if (poll[0] == 44 && poll[1] == 56) {
-				System.out.println("here");
-			}
-			for (int i = 0; i < poll.length; i++) {
-				final Ingredient ingredient = list.get(i);
-				sums[0] += ingredient.capacity * poll[i];
-				sums[1] += ingredient.durability * poll[i];
-				sums[2] += ingredient.flavor * poll[i];
-				sums[3] += ingredient.texture * poll[i];
-				//sums[4] = ingredient.calories * poll[i];
-			}
-			for (int i = 0; i < sums.length; i++) {
-				if (sums[i] < 0){
-					sums[i] = 0;
-				}
-			}
-			final long sum = mul(sums);
-			if (sum > max) {
-				max = sum;
-				System.out.println(max+ " " + Arrays.toString(poll));
-			}
+    private long findBest(List<Ingredient> list, int caloriesMax) {
+        return findBest(list, 100, new Ingredient("", 0, 0, 0, 0, 0), caloriesMax);
+        
+    }
+    private long findBest(List<Ingredient> list, int remaining, Ingredient current, int caloriesMax) {
+        long max = 0;
+        Ingredient next = list.getFirst();
+        if (list.size() == 1) {
+            Ingredient multiply = next.multiply(remaining);
 
-			//System.out.println(Arrays.toString(poll));
-			if (poll[0] > 0) {
-				for (int i = 1; i < list.size(); i++) {
-					final int[] ints = Arrays.copyOf(poll, poll.length);
-					ints[0]--;
-					ints[i]++;
-					queue.add(ints);
-				}
-			}
+            Ingredient sum = current.sum(multiply);
+            if (caloriesMax == Integer.MAX_VALUE || sum.calories == caloriesMax) {
+                long l = Math.max(0, sum.capacity) * Math.max(0, sum.flavor)
+                        * Math.max(0, sum.texture) * Math.max(0, sum.durability);
+                max = Math.max(max, l);
+            }
 
-		}
-		System.out.println(max);
+        }
+        
+        for (int i = 0; i <= remaining; i++) {
+            Ingredient multiply = next.multiply(i);
 
-	}
+            if (list.size() > 1) {
+                long tmp = findBest(list.subList(1, list.size()), remaining - i, current.sum(multiply), caloriesMax);
+                max = Math.max(max, tmp);
+            }
+        }
+        return max;
+    }
 
-	long mul(int[] array) {
-		return Arrays.stream(array).reduce(1, (i1, i2) -> i1 * i2);
-	}
 
-	int sum(int[] array) {
-		return Arrays.stream(array).sum();
-	}
+    private static List<Ingredient> buildIngredients(List<String> input, Pattern p) {
+        final List<Ingredient> list = input.stream().map(line -> {
+            final Matcher matcher = p.matcher(line);
+            matcher.find();
+            return new Ingredient(matcher.group(1), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)),
+                    Integer.parseInt(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+        }).toList();
+        return list;
+    }
 
-	record Ingredient(String name, int capacity, int durability, int flavor, int texture, int calories) {
-	}
+    long mul(int[] array) {
+        return Arrays.stream(array).reduce(1, (i1, i2) -> i1 * i2);
+    }
 
-	@Override
-	public void solvePartTwo(List<String> input) {
-	}
+    int sum(int[] array) {
+        return Arrays.stream(array).sum();
+    }
+
+    record Ingredient(String name, long capacity, long durability, long flavor, long texture, long calories) {
+        Ingredient multiply(long factor) {
+            return new Ingredient("",
+                    capacity * factor,
+                    durability * factor,
+                    flavor * factor,
+                    texture * factor,
+                    calories * factor);
+        }
+
+        Ingredient sum(Ingredient other) {
+            return new Ingredient("",
+                    capacity + other.capacity,
+                    durability + other.durability,
+                    flavor + other.flavor,
+                    texture + other.texture,
+                    calories + other.calories);
+        }
+    }
+
+    @Override
+    public void solvePartTwo(List<String> input) {
+        Pattern p = Pattern.compile("(.+): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)");
+        final List<Ingredient> list = buildIngredients(input, p);
+
+        long max = findBest(list, 500);
+        System.out.println("max: " + max);
+    }
 
 }
